@@ -1,5 +1,6 @@
 ﻿namespace Compiler.CodeAnalysis
 {
+    //syntax of the tree. indexing the root of the tree
     public class SyntaxTree
     {
         public IEnumerable<string> Diagnostics { get; }

@@ -8,11 +8,13 @@
 
         public IEnumerable<string> Diagnostics => _diagnostics;
 
+        //constructor of lexer. Receive the text input
         public Lexer(string text)
         {
             _text = text;
         }
 
+        //gets current value in the input.
         private char _current
         {
             get
@@ -23,11 +25,13 @@
             }
         }
 
+        //go to next position in the input
         private void Next()
         {
             _position++;
         }
 
+        // make the lexer, identifying the value and grabing the specific token of the value.
         public SyntaxToken Lex()
         {
             //recognize if is the end of file

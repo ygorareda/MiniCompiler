@@ -1,6 +1,6 @@
 ﻿namespace Compiler.CodeAnalysis
 {
-
+    //expression of a number
     public class LiteralExpressionSyntax : ExpressionSyntax
     {
         public SyntaxToken LiteralToken { get; }

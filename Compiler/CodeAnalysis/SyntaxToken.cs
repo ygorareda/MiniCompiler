@@ -1,5 +1,6 @@
 ﻿namespace Compiler.CodeAnalysis
 {
+    //syntax of token
     public class SyntaxToken : SyntaxNode
     {
         public override SyntaxKind Kind { get; }
