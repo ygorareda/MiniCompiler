@@ -16,7 +16,7 @@
 
         //Expressions
         LiteralExpression,
-        binaryExpression,
+        BinaryExpression,
         UnaryExpression
     }
 }

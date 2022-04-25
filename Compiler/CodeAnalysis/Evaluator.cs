@@ -1,14 +1,15 @@
-﻿using Compiler.CodeAnalysis.Syntax;
+﻿using Compiler.CodeAnalysis.Binding;
+using Compiler.CodeAnalysis.Syntax;
 
 namespace Compiler.CodeAnalysis
 {
     //calculates a expression
-    public class Evaluator
+    internal sealed class Evaluator
     {
-        public ExpressionSyntax Root { get; }
+        private readonly BoundExpression Root;
 
         // constructor. Gets the tree that was built with the lexer and parser, and calculates the result.
-        public Evaluator(ExpressionSyntax root)
+        public Evaluator(BoundExpression root)
         {
             Root = root;
         }
@@ -20,52 +21,48 @@ namespace Compiler.CodeAnalysis
         }
 
         //calculate the value. Receive one node of the tree
-        private int EvaluateExpression(ExpressionSyntax node)
+        private int EvaluateExpression(BoundExpression node)
         {
             //if the node is a number, return the number
-            if (node is LiteralExpressionSyntax n)
+            if (node is BoundLiteralExpression n)
             {
-                return (int)n.LiteralToken._value;
+                return (int)n.Value;
             }
 
             //if the node is a unary (-1), return the unary value. -1 = -1 || +1 = 1
-            if(node is UnaryExpressionSyntax u)
+            if(node is BoundUnaryExpression u)
             {
                 var operand = EvaluateExpression(u.Operand);
 
-                if (u.OperatorToken.Kind == SyntaxKind.PlusToken)
-                    return operand;
-                else if (u.OperatorToken.Kind == SyntaxKind.MinusToken)
-                    return -operand;
-                else
-                    throw new Exception($"Unexpected unary operator {u.OperatorToken.Kind}");
+                switch (u.OperatorKind)
+                {
+                    case BoundUnaryOperatorKind.Identity:
+                        return operand;
+                    case BoundUnaryOperatorKind.Negation:
+                        return -operand;
+                    default:
+                        throw new Exception($"Unexpected unary operator {u.OperatorKind}");
+                }
             }
 
             //if the node is a expression, calculates the result
-            if (node is BinaryExpressionSyntax b)
+            if (node is BoundBinaryExpression b)
             {
                 var left = EvaluateExpression(b.Left);
                 var right = EvaluateExpression(b.Right);
 
-                if (b.OperatorToken.Kind == SyntaxKind.PlusToken)
+                switch (b.OperatorKind)
                 {
-                    return left + right;
-                }
-                else if (b.OperatorToken.Kind == SyntaxKind.MinusToken)
-                {
-                    return left - right;
-                }
-                else if (b.OperatorToken.Kind == SyntaxKind.StarToken)
-                {
-                    return left * right;
-                }
-                else if (b.OperatorToken.Kind == SyntaxKind.SlashToken)
-                {
-                    return left / right;
-                }
-                else
-                {
-                    throw new Exception($"Unexpected binary operator {b.OperatorToken.Kind}");
+                    case BoundBinaryOperatorKind.Addition:
+                        return left + right;
+                    case BoundBinaryOperatorKind.Subtraction:
+                        return left - right;
+                    case BoundBinaryOperatorKind.Multiplication:
+                        return left * right;
+                    case BoundBinaryOperatorKind.Division:
+                        return left / right;
+                    default:
+                        throw new Exception($"Unexpected binary operator {b.OperatorKind}");
                 }
             }
 
