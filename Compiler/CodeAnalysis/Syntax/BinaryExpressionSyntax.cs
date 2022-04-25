@@ -1,4 +1,4 @@
-﻿namespace Compiler.CodeAnalysis
+﻿namespace Compiler.CodeAnalysis.Syntax
 {
     //syntax of "expression" that will be calculated
     public class BinaryExpressionSyntax : ExpressionSyntax

@@ -1,4 +1,4 @@
-﻿namespace Compiler.CodeAnalysis
+﻿namespace Compiler.CodeAnalysis.Syntax
 {
     //syntax of the tree. indexing the root of the tree
     public class SyntaxTree

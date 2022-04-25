@@ -1,4 +1,6 @@
-﻿namespace Compiler.CodeAnalysis
+﻿using Compiler.CodeAnalysis.Syntax;
+
+namespace Compiler.CodeAnalysis
 {
     //calculates a expression
     public class Evaluator

@@ -1,4 +1,4 @@
-﻿namespace Compiler.CodeAnalysis
+﻿namespace Compiler.CodeAnalysis.Syntax
 {
     //syntax of a unary (-1) expression
     public class UnaryExpressionSyntax : ExpressionSyntax

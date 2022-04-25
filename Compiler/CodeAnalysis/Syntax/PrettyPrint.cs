@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compiler.CodeAnalysis
+namespace Compiler.CodeAnalysis.Syntax
 {
     public class PrettyPrint
     {

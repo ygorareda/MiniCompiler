@@ -1,6 +1,7 @@
 ﻿using Compiler.CodeAnalysis;
+using Compiler.CodeAnalysis.Syntax;
 
-    while (true)
+while (true)
     {
         Console.Write(">");
         var line = Console.ReadLine();

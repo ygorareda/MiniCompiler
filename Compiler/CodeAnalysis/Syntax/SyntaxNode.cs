@@ -1,4 +1,4 @@
-﻿namespace Compiler.CodeAnalysis
+﻿namespace Compiler.CodeAnalysis.Syntax
 {
     //node of the tree, probabily the operand
     public abstract class SyntaxNode

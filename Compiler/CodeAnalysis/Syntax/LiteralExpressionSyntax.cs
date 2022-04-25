@@ -1,4 +1,4 @@
-﻿namespace Compiler.CodeAnalysis
+﻿namespace Compiler.CodeAnalysis.Syntax
 {
     //expression of a number
     public class LiteralExpressionSyntax : ExpressionSyntax
