@@ -17,6 +17,11 @@
         //Expressions
         LiteralExpression,
         BinaryExpression,
-        UnaryExpression
+        UnaryExpression,
+        NameExpression,
+        AssignmentExpression,
+        EqualsToken,
+        EqualsEqualsToken,
+        IdentifierToken
     }
 }

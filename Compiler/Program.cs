@@ -2,6 +2,8 @@
 using Compiler.CodeAnalysis.Binding;
 using Compiler.CodeAnalysis.Syntax;
 
+var variables = new Dictionary<string, object>();
+
 while (true)
     {
         Console.Write(">");
@@ -13,17 +15,17 @@ while (true)
         var parser = new Parser(line);
         
         var syntaxTree = parser.Parse();
-        var binder = new Binder();
+        var binder = new Binder(variables);
         var boundExpression = binder.BindExpression(syntaxTree.Root);
 
         var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
-        //var printTree = new PrettyPrint();
-        //printTree.PrettyPrintTree(syntaxTree.Root);
+        var printTree = new PrettyPrint();
+        printTree.PrettyPrintTree(syntaxTree.Root);
 
-        if (!syntaxTree.Diagnostics.Any())
+    if (!syntaxTree.Diagnostics.Any())
         {
-            var e = new Evaluator(boundExpression);
+            var e = new Evaluator(boundExpression, variables);
             var result = e.Evaluate();
             Console.WriteLine(result);
         }

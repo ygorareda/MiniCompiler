@@ -15,15 +15,20 @@
         }
 
         //gets current value in the input.
-        private char _current
+        private char _current => Peek(0);
+
+        private char _lookahead => Peek(1);
+
+        private char Peek(int offset)
         {
-            get
-            {
-                if (_position >= _text.Length)
-                    return '\0';
-                return _text[_position];
-            }
+            var index = _position + offset;
+
+            if (index >= _text.Length)
+                return '\0';
+
+            return _text[index];
         }
+
 
         //go to next position in the input
         private void Next()
@@ -70,6 +75,17 @@
                 return new SyntaxToken(SyntaxKind.WhiteSpace, start, text, null);
             }
 
+            if (char.IsLetter(_current))
+            {
+                var start = _position;
+                while (char.IsLetter(_current))
+                    Next();
+
+                var length = _position - start;
+                var text = _text.Substring(start, length);
+                return new SyntaxToken(SyntaxKind.IdentifierToken, start, text, null);
+            }
+
             //recognize expression
             switch (_current)
             {
@@ -85,6 +101,17 @@
                     return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null);
                 case ')':
                     return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null);
+                case '=':
+                    if (_lookahead == '=')
+                    {
+                        _position += 2;
+                        return new SyntaxToken(SyntaxKind.EqualsEqualsToken, _position, "==", null);
+                    }
+                    else
+                    {
+                        _position += 1;
+                        return new SyntaxToken(SyntaxKind.EqualsToken, _position, "=", null);
+                    }
             }
 
             _diagnostics.Add($"ERROR: bad character input: '{_current}'");

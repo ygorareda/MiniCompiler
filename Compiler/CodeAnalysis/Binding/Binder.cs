@@ -7,14 +7,21 @@ using System.Threading.Tasks;
 
 namespace Compiler.CodeAnalysis.Binding
 {
-
     internal sealed class Binder
     {
 
         private readonly List<string> _diagnostics = new List<string>();
+        private readonly Dictionary<string, object> _variables;
+
+        public Binder(Dictionary<string, object> variables)
+        { 
+            _variables = variables;
+        }
 
         public IEnumerable<string> Diagnostics => _diagnostics;
 
+
+        //receive the root
         public BoundExpression BindExpression(ExpressionSyntax syntax)
         {
             switch (syntax.Kind)
@@ -25,10 +32,33 @@ namespace Compiler.CodeAnalysis.Binding
                     return BindUnaryExpression((UnaryExpressionSyntax)syntax);
                 case SyntaxKind.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionSyntax)syntax);
+                case SyntaxKind.NameExpression:
+                    return BindNameExpression((NameExpressionSyntax)syntax);
+                case SyntaxKind.AssignmentExpression:
+                    return BindAssignmentExpression((AssignmentExpressionSyntax)syntax);
                 default:
                     throw new Exception($"Unexpected syntax {syntax.Kind}");
             }
         }
+
+        private BoundExpression BindNameExpression(NameExpressionSyntax syntax)
+        {
+            var name = syntax.IdentifierToken._text;
+            if (!_variables.TryGetValue(name, out var value))
+            {
+                _diagnostics.Add($"Undefined name {name}");
+                return new BoundLiteralExpression(0);
+            }
+            var type = typeof(int);
+            return new BoundVariablesExpression(name, type);
+        }
+        private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax syntax)
+        {
+            var name = syntax.IdentifierToken._text;
+            var boundExpression = BindExpression(syntax.Expression);
+            return new BoundAssignmentExpression(name, boundExpression);
+        }
+
 
         private BoundExpression BindLiteralExpression(LiteralExpressionSyntax syntax)
         {

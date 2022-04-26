@@ -6,27 +6,40 @@ namespace Compiler.CodeAnalysis
     //calculates a expression
     internal sealed class Evaluator
     {
-        private readonly BoundExpression Root;
+        private readonly BoundExpression _root;
+        private readonly Dictionary<string, object> _variables;
 
         // constructor. Gets the tree that was built with the lexer and parser, and calculates the result.
-        public Evaluator(BoundExpression root)
+        public Evaluator(BoundExpression root, Dictionary<string, object> variables)
         {
-            Root = root;
+            _root = root;
+            _variables = variables;
         }
 
+
         //fuction to call the evaluate, sending the root of the tree
-        public int Evaluate()
+        public object Evaluate()
         {
-            return EvaluateExpression(Root);
+            return EvaluateExpression(_root);
         }
 
         //calculate the value. Receive one node of the tree
-        private int EvaluateExpression(BoundExpression node)
+        private object EvaluateExpression(BoundExpression node)
         {
             //if the node is a number, return the number
             if (node is BoundLiteralExpression n)
             {
                 return (int)n.Value;
+            }
+
+            if(node is BoundVariablesExpression v)
+                return _variables[v.Name];
+
+            if (node is BoundAssignmentExpression a)
+            {
+                var value = EvaluateExpression(a.Expression);
+                _variables[a.Name] = value;
+                return value;
             }
 
             //if the node is a unary (-1), return the unary value. -1 = -1 || +1 = 1
@@ -37,9 +50,9 @@ namespace Compiler.CodeAnalysis
                 switch (u.OperatorKind)
                 {
                     case BoundUnaryOperatorKind.Identity:
-                        return operand;
+                        return (int)operand;
                     case BoundUnaryOperatorKind.Negation:
-                        return -operand;
+                        return -(int)operand;
                     default:
                         throw new Exception($"Unexpected unary operator {u.OperatorKind}");
                 }
@@ -54,13 +67,13 @@ namespace Compiler.CodeAnalysis
                 switch (b.OperatorKind)
                 {
                     case BoundBinaryOperatorKind.Addition:
-                        return left + right;
+                        return (int)left + (int)right;
                     case BoundBinaryOperatorKind.Subtraction:
-                        return left - right;
+                        return (int)left - (int)right;
                     case BoundBinaryOperatorKind.Multiplication:
-                        return left * right;
+                        return (int)left * (int)right;
                     case BoundBinaryOperatorKind.Division:
-                        return left / right;
+                        return (int)left / (int)right;
                     default:
                         throw new Exception($"Unexpected binary operator {b.OperatorKind}");
                 }
