@@ -19,7 +19,9 @@
             {
                 token = lexer.Lex();
 
-                if (token.Kind != SyntaxKind.WhiteSpace && token.Kind != SyntaxKind.BadToken)
+                if (token.Kind != SyntaxKind.WhiteSpace 
+                    && token.Kind != SyntaxKind.BadToken 
+                    && token.Kind != SyntaxKind.RemToken)
                 {
                     tokens.Add(token);
                 }
@@ -61,7 +63,7 @@
             }
 
             _diagnostics.Add($"ERROR: unexpected token <{Current.Kind}>, expected <{kind}>");
-            return new SyntaxToken(kind, Current._position, null, null);
+            return new SyntaxToken(Current._line,kind, Current._position, null, null);
         }
 
         //"main" function, parse the tokens. In end of the expression, verify if us the end of file with the endOfFilToken. Return the tree, that contains the result
@@ -74,11 +76,39 @@
         }
         private ExpressionSyntax ParseExpression()
         {
+            return ParseCommandExpression();
+        }
+
+        public ExpressionSyntax ParseCommandExpression()
+        {
+            var command = NextToken();
+
+            switch (command.Kind)
+            {
+                case SyntaxKind.InputToken:
+                    var value = ParseInputExpression();
+                    return ParseBinaryExpression(value:value);
+                case SyntaxKind.LetToken:
+                    return ParseAssignmentExpression();
+                case SyntaxKind.PrintToken:
+                    return ParsePrimaryExpression();
+            }
+
             return ParseAssignmentExpression();
         }
 
+        private int ParseInputExpression()
+        {
+            var variable = Current;
+            Console.Write("?");
+            var value = int.Parse(Console.ReadLine());
+            var token = new SyntaxToken(Current._line, SyntaxKind.NumberToken, Current._position, value.ToString(), value);
+            var literal = new LiteralExpressionSyntax(token);
+            return value;
+            //return new AssignmentExpressionSyntax(variable,new SyntaxToken(Current._line,SyntaxKind.EqualsToken, Current._position, "=", null), literal);
+        }
 
-        private ExpressionSyntax ParseAssignmentExpression()
+        public ExpressionSyntax ParseAssignmentExpression()
         {
             if(Peek(0).Kind == SyntaxKind.IdentifierToken && Peek(1).Kind == SyntaxKind.EqualsToken)
             {
@@ -91,9 +121,10 @@
             return ParseBinaryExpression();
         }
 
+        
 
         // basically get the precedent of the tokens, and built the tree 
-        private ExpressionSyntax ParseBinaryExpression(int parentPrecedence = 0)
+        private ExpressionSyntax ParseBinaryExpression(int parentPrecedence = 0,int value=0)
         {
             ExpressionSyntax left;
 
@@ -119,6 +150,7 @@
 
                 var operatorToken = NextToken();
                 var right = ParseBinaryExpression(precedence);
+                var teste = value;
                 left = new BinaryExpressionSyntax(left, operatorToken, right);
 
             }

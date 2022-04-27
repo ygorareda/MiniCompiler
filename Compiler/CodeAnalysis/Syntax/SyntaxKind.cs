@@ -22,6 +22,16 @@
         AssignmentExpression,
         EqualsToken,
         EqualsEqualsToken,
-        IdentifierToken
+        IdentifierToken,
+
+        //commands
+        LineToken,
+        RemToken,
+        InputToken,
+        LetToken,
+        PrintToken,
+        GotoToken,
+        IfToken,
+        EndToken
     }
 }
